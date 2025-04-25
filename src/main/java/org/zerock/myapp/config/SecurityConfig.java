@@ -68,36 +68,11 @@ public class SecurityConfig {
 //                        .anyRequest().permitAll()
 //                ) // 테스트 용.
                 
-//             // 권한·인증 예외 처리
-//                .exceptionHandling(exception -> exception
-//                    // 인증 실패(로그인 안 된 상태) 시
-//                    .authenticationEntryPoint((request, response, authException) -> {
-//                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//                        response.setContentType("application/json; charset=UTF-8");
-//                        response.getWriter().write("{\"message\":\"권한이 없습니다. 로그인 후 다시 시도해주세요.\"}");
-//                    })
-//                    // 인증은 됐으나 권한이 없을 때
-//                    .accessDeniedHandler((request, response, accessDeniedException) -> {
-//                        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-//                        response.setContentType("application/json; charset=UTF-8");
-//                        response.getWriter().write("{\"message\":\"권한이 없습니다.\"}");
-//                    })
-//                )
-                
-//                // 4) 폼 로그인 & 성공 핸들러 연결
-//                .formLogin(form -> form
-//                    .loginProcessingUrl("/auth/login")           // React(또는 클라이언트)에서 POST 할 로그인 URL
-//                    .successHandler(loginSuccessUrlHandler)      // 로그인 성공 시 getRedirectUrlByRole() 호출
-//                    .failureHandler((req, res, ex) -> {
-//                        res.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-//                    })
-//                    .permitAll()
-//                )
             
                 .authorizeHttpRequests(auth -> auth
                 	    
-                		  //SYSTEM_MANAGER는 모든 요청 허용
-//                	    .requestMatchers("/**").hasRole("SystemManager")
+                		  // SYSTEM_MANAGER는 모든 요청 허용
+                	    .requestMatchers("/**").hasRole("SystemManager")
                 		
                 	    .requestMatchers(
                 	        "/auth/login",
@@ -117,10 +92,10 @@ public class SecurityConfig {
                 	    .requestMatchers(HttpMethod.GET, "/department/**").permitAll()
 
                 	    // 인사담당자.
-//                	    .requestMatchers(
-//                	        "/employee",
-//                	        "/employee/**"
-//                	    ).hasRole("HireManager")
+                	    .requestMatchers(
+                	        "/employee",
+                	        "/employee/**"
+                	    ).hasRole("HireManager")
 
                 	    // 프로젝트.
                 	    .requestMatchers(
@@ -160,13 +135,12 @@ public class SecurityConfig {
                 	   
                 	    
                 	    
-//                	    .anyRequest().authenticated()
-                	    .anyRequest().permitAll()
-                	)
+                	    .anyRequest().authenticated()
+                	
 
-//                .sessionManagement()
-//                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//                .and()
+                .sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
                 .logout(logout -> logout
                         .logoutUrl("/logout")
