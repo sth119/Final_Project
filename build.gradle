@@ -1,0 +1,91 @@
+plugins {
+	id 'java'
+	id 'war'
+	id 'eclipse-wtp'
+	id 'org.springframework.boot' version '3.4.4'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+eclipse {
+   wtp {
+      facet {
+         facet name: 'jst.web', version: '6.0'
+         facet name: 'jst.java', version: '21'
+      }
+      component {
+         contextPath = '/'
+      }
+   }
+}
+
+group = 'org.zerock.myapp'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+configurations {
+	compileOnly.extendsFrom(annotationProcessor)
+	testCompileOnly.extendsFrom(testAnnotationProcessor)
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	// web-tomcat
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+	
+	// web-socket
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	implementation 'org.springframework:spring-messaging'
+	// lombok
+	annotationProcessor 'org.projectlombok:lombok'
+	testAnnotationProcessor 'org.projectlombok:lombok'
+	
+	// devtool	
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	
+	// Configure JDBC Drivers ( Databases )
+	//runtimeOnly 'com.mysql:mysql-connector-j'
+	runtimeOnly('com.oracle.database.jdbc:ojdbc11-production') {
+      exclude group: 'com.oracle.database.ha',    module: 'simplefan'
+      exclude group: 'com.oracle.database.ha',    module: 'ons'
+      exclude group: 'com.oracle.database.jdbc',  module: 'rsi'
+      exclude group: 'com.oracle.database.xml',   module: 'xdb'
+      exclude group: 'com.oracle.database.xml',   module: 'xmlparserv2'
+   }
+	
+	// junit-test
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	
+	// Configure Spring Boot Data JPA
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	
+	// Thymeleaf	
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+	
+    // Spring Security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    testImplementation 'org.springframework.security:spring-security-test'
+    
+   
+    // Java Web Token
+    implementation("com.auth0:java-jwt:4.4.0")
+    
+    // Simple OpenAI
+	implementation('io.github.sashirestela:simple-openai:3.19.4') {
+    	exclude group: 'org.slf4j', module: 'slf4j-simple'
+	}
+}	
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
