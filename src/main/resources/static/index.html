@@ -1,1 +1,84 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"/><link rel="icon" href="/favicon.ico"/><meta name="viewport" content="width=device-width,initial-scale=1"/><script src="https://kit.fontawesome.com/e5e92ab1fd.js" crossorigin="anonymous"></script><title>React App</title><script defer="defer" src="/static/js/main.162b19db.js"></script><link href="/static/css/main.a30c902c.css" rel="stylesheet"></head><body><div id="root"></div></body></html>
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>WebSocket Chatting Room - 1</title>
+    
+    <style>
+        #messages { list-style: disc; }
+       /* .input-indent { margin-left: 20px; } */
+    </style>
+
+    <script defer>
+      // Note: `ws:URL` if http protocol used, `wss:URL` if https protocol used.
+        var socket = new WebSocket("wss://192.168.0.83/chatroom?chatId=1");
+      console.log('socket:', socket);
+   
+      var uuid;
+      
+        socket.onopen = e => {
+           console.debug('onopen invoked:', e);
+           console.log("Connected to /chatroom endpoint.");
+           
+           uuid = crypto.randomUUID().split('-')[0];
+           console.log('\t+ uuid:', uuid);
+
+          let uuidButton = document.querySelector('#uuidButton');
+          uuidButton.textContent = uuid;
+        };
+        
+        socket.onerror = e => {
+           console.debug('onerror invoked:', e);
+           // socket.close();
+        };
+        
+        socket.onclose = () => {
+           console.debug('onclose invoked.');
+           console.log("Disconnected from /chatroom endpoint.");
+           
+           uuid = "";
+        };
+
+        socket.onmessage = e => {
+           console.debug('onmessage invoked:', e);
+           
+            let messagesList = document.querySelector("#messages");            
+            let newMessageItem = document.createElement("li");
+            newMessageItem.textContent = e.data;
+            messagesList.appendChild(newMessageItem);
+        };   // .onmessage
+
+        function sendMessage() {
+           console.debug('sendMessage invoked.');           
+            socket.send(uuid + ': ' + messageInput.value);
+            messageInput.value = "";                          // Clear the input field
+        }
+        
+        document.addEventListener("keydown", e => {
+           console.debug('onkeydown invoked:', e.key);
+           
+           if(e.key === 'Enter') {
+               const messageInput = document.querySelector("#messageInput");
+               if(messageInput.value === '') {
+                  e.preventDefault();
+                  return;
+               }
+               
+              const sendButton = document.querySelector('#sendButton');
+              sendButton.click();
+           }
+           
+        });
+    </script>
+</head>
+
+<body>
+    <h3>/static/index.html</h3>
+    <hr>
+    
+    <ul id="messages"></ul>
+    
+    <button id="uuidButton">UUID</button>
+    <input type="text" id="messageInput" size="35" placeholder="Enter chat message ..." class="input-indent"/>
+    <button id="sendButton" onclick="sendMessage()">Send</button>
+</body>
+</html>

@@ -34,7 +34,7 @@ import lombok.Data;
 public class ChatEmployee implements Serializable {
 	@Serial private static final long serialVersionUID = 1L;
 
-	@EmbeddedId
+	@EmbeddedId // 복합키를 나타내는 어노테이션.
 	private ChatEmployeePK id; // 채팅방-사원 id
 	
 	@Convert(converter = BooleanToIntegerConverter.class)
@@ -48,6 +48,8 @@ public class ChatEmployee implements Serializable {
 	@CurrentTimestamp(event = EventType.UPDATE, source = SourceType.DB)
 	private Date udtDate; // 수정일
 
+	@Column(nullable=true, length= 5)
+	private Integer cnt; // 채팅방 안에 있는 인원 수
 	
 	// join
 	@ManyToOne
